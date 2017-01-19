@@ -27,14 +27,16 @@ def main():
   k = x[:-16] 
   k = k[:16]
   credentials = open(sys.argv[3]).read()
-  passwords = re.findall(r'<password>(.*?)</password>', credentials)
+  passwords = re.findall(r'<username>(.*?)</username>.*\n.*<password>(.*?)</password>', credentials)
 
-  for password in passwords:
+  for credentials in passwords:
+    user = credentials[0]
+    password = credentials[1]
     p = base64.decodestring(password)
     o = AES.new(k, AES.MODE_ECB)
     x = o.decrypt(p)
     assert MAGIC in x
-    print re.findall('(.*)' + MAGIC, x)[0]
+    print user + " => " + re.findall('(.*)' + MAGIC, x)[0]
 
 
 if __name__ == '__main__':
